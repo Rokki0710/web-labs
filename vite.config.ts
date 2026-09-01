@@ -8,6 +8,7 @@ export default defineConfig({
         main: resolve(import.meta.dirname, 'index.html'),
         movies: resolve(import.meta.dirname, 'movies.html'),
         about: resolve(import.meta.dirname, 'about.html'),
+        auth: resolve(import.meta.dirname, 'auth.html'),
       },
     },
   },

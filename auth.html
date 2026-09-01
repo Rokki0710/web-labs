@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Вход и регистрация в учебном портале MovieHub." />
+    <title>MovieHub — вход и регистрация</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/auth.ts"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/index.html"><span class="brand__mark">M</span><span>MOVIEHUB</span></a>
+      <button class="menu-button" type="button" data-menu-toggle aria-controls="side-menu" aria-expanded="false">
+        <span class="menu-button__icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Меню</span>
+      </button>
+    </header>
+    <div class="menu-overlay" data-menu-overlay></div>
+    <nav class="side-menu" id="side-menu" data-menu aria-hidden="true" aria-label="Главное меню">
+      <div class="side-menu__top"><strong>Навигация</strong><button class="menu-close" type="button" data-menu-close aria-label="Закрыть меню">×</button></div>
+      <ul class="side-menu__links">
+        <li><a href="/index.html">Главная</a></li>
+        <li><a href="/movies.html">Фильмы</a></li>
+        <li><a href="/about.html">О проекте</a></li>
+        <li><a href="/auth.html" aria-current="page">Войти</a></li>
+      </ul>
+      <p class="side-menu__note">Сохраняй идеи.<br />Возвращайся к кино.</p>
+    </nav>
+
+    <main class="auth-page" id="top">
+      <section class="auth-intro" aria-labelledby="auth-title">
+        <span class="eyebrow">MovieHub ID / лабораторная №2</span>
+        <h1 id="auth-title">Твоё кино.<br />Твой профиль.</h1>
+        <p>Войди, чтобы продолжить собирать личную подборку, или создай новый профиль.</p>
+        <ul class="auth-benefits">
+          <li><span>01</span> Сохраняй фильмы на вечер</li>
+          <li><span>02</span> Собирай любимые жанры</li>
+          <li><span>03</span> Возвращайся к подборкам</li>
+        </ul>
+        <p class="auth-demo-note"><strong>Учебный режим:</strong> данные проверяются только в браузере и никуда не отправляются.</p>
+      </section>
+
+      <section class="auth-card" aria-label="Авторизация и регистрация">
+        <div class="auth-tabs" role="tablist" aria-label="Выбор формы">
+          <button class="auth-tab is-active" id="login-tab" type="button" role="tab" aria-selected="true" aria-controls="login-panel" data-auth-tab="login">Вход</button>
+          <button class="auth-tab" id="register-tab" type="button" role="tab" aria-selected="false" aria-controls="register-panel" data-auth-tab="register">Регистрация</button>
+        </div>
+
+        <div class="auth-panel" id="login-panel" role="tabpanel" aria-labelledby="login-tab" data-auth-panel="login">
+          <div class="auth-panel__heading">
+            <span class="eyebrow">С возвращением</span>
+            <h2>Войти в MovieHub</h2>
+            <p><span class="required-key">Обязательные</span> поля отмечены звёздочкой.</p>
+          </div>
+          <form class="auth-form" id="login-form" data-validate-form data-form-kind="login" novalidate>
+            <div class="field">
+              <label for="login-email">Email <span aria-hidden="true">*</span></label>
+              <div class="field-control-wrap">
+                <input class="form-control" id="login-email" name="email" type="email" autocomplete="email" maxlength="80" placeholder="name@example.com" required aria-describedby="login-email-hint login-email-error" />
+                <span class="validation-icon" aria-hidden="true"></span>
+              </div>
+              <span class="field-hint" id="login-email-hint">Введите адрес в формате name@example.com.</span>
+              <span class="field-error" id="login-email-error" data-error-for="login-email" aria-live="polite"></span>
+            </div>
+
+            <div class="field">
+              <label for="login-password">Пароль <span aria-hidden="true">*</span></label>
+              <div class="field-control-wrap">
+                <input class="form-control" id="login-password" name="password" type="password" autocomplete="current-password" minlength="8" maxlength="24" pattern="(?=.*[A-ZА-ЯЁ])(?=.*[a-zа-яё])(?=.*[0-9]).{8,24}" placeholder="Не менее 8 символов" required aria-describedby="login-password-hint login-password-error" data-password />
+                <button class="password-toggle" type="button" data-password-toggle="login-password" aria-label="Показать пароль">Показать</button>
+              </div>
+              <span class="field-hint" id="login-password-hint">8–24 символа: заглавная, строчная буква и цифра.</span>
+              <span class="field-error" id="login-password-error" data-error-for="login-password" aria-live="polite"></span>
+            </div>
+
+            <label class="check-field" for="remember-me">
+              <input id="remember-me" name="remember" type="checkbox" />
+              <span>Запомнить меня <small>(необязательно)</small></span>
+            </label>
+
+            <button class="auth-submit" type="submit">Войти</button>
+            <div class="form-success" data-form-success role="status" hidden></div>
+          </form>
+        </div>
+
+        <div class="auth-panel" id="register-panel" role="tabpanel" aria-labelledby="register-tab" data-auth-panel="register" hidden>
+          <div class="auth-panel__heading">
+            <span class="eyebrow">Новый профиль</span>
+            <h2>Создать аккаунт</h2>
+            <p>Заполни поля — каждое значение проверяется сразу в браузере.</p>
+          </div>
+          <form class="auth-form" id="register-form" data-validate-form data-form-kind="register" novalidate>
+            <div class="form-row">
+              <div class="field">
+                <label for="first-name">Имя <span aria-hidden="true">*</span></label>
+                <div class="field-control-wrap">
+                  <input class="form-control" id="first-name" name="firstName" type="text" autocomplete="given-name" minlength="2" maxlength="30" pattern="[А-ЯЁA-Z][а-яёa-z]{1,29}" placeholder="Анна" required data-person-name aria-describedby="first-name-hint first-name-error" />
+                  <span class="validation-icon" aria-hidden="true"></span>
+                </div>
+                <span class="field-hint" id="first-name-hint">Только буквы, первая заглавная.</span>
+                <span class="field-error" id="first-name-error" data-error-for="first-name" aria-live="polite"></span>
+              </div>
+              <div class="field">
+                <label for="last-name">Фамилия <span aria-hidden="true">*</span></label>
+                <div class="field-control-wrap">
+                  <input class="form-control" id="last-name" name="lastName" type="text" autocomplete="family-name" minlength="2" maxlength="30" pattern="[А-ЯЁA-Z][а-яёa-z]{1,29}" placeholder="Иванова" required data-person-name aria-describedby="last-name-hint last-name-error" />
+                  <span class="validation-icon" aria-hidden="true"></span>
+                </div>
+                <span class="field-hint" id="last-name-hint">Только буквы, первая заглавная.</span>
+                <span class="field-error" id="last-name-error" data-error-for="last-name" aria-live="polite"></span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="register-email">Email <span aria-hidden="true">*</span></label>
+              <div class="field-control-wrap">
+                <input class="form-control" id="register-email" name="email" type="email" autocomplete="email" maxlength="80" placeholder="name@example.com" required aria-describedby="register-email-hint register-email-error" />
+                <span class="validation-icon" aria-hidden="true"></span>
+              </div>
+              <span class="field-hint" id="register-email-hint">На этот адрес могла бы прийти ссылка подтверждения.</span>
+              <span class="field-error" id="register-email-error" data-error-for="register-email" aria-live="polite"></span>
+            </div>
+
+            <div class="form-row">
+              <div class="field">
+                <label for="phone">Телефон <span aria-hidden="true">*</span></label>
+                <div class="field-control-wrap">
+                  <input class="form-control" id="phone" name="phone" type="tel" autocomplete="tel" inputmode="numeric" maxlength="18" pattern="\+7 \([0-9]{3}\) [0-9]{3}-[0-9]{2}-[0-9]{2}" placeholder="+7 (999) 123-45-67" required data-phone aria-describedby="phone-hint phone-error" />
+                  <span class="validation-icon" aria-hidden="true"></span>
+                </div>
+                <span class="field-hint" id="phone-hint">Маска: +7 (999) 999-99-99.</span>
+                <span class="field-error" id="phone-error" data-error-for="phone" aria-live="polite"></span>
+              </div>
+              <div class="field">
+                <label for="age">Возраст <span aria-hidden="true">*</span></label>
+                <div class="field-control-wrap">
+                  <input class="form-control" id="age" name="age" type="number" inputmode="numeric" min="14" max="100" step="1" placeholder="18" required data-age aria-describedby="age-hint age-error" />
+                  <span class="validation-icon" aria-hidden="true"></span>
+                </div>
+                <span class="field-hint" id="age-hint">Минимум 14, максимум 100.</span>
+                <span class="field-error" id="age-error" data-error-for="age" aria-live="polite"></span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label for="favorite-movie">Любимый фильм <small>(необязательно)</small></label>
+              <div class="field-control-wrap">
+                <input class="form-control" id="favorite-movie" name="favoriteMovie" type="text" minlength="2" maxlength="60" placeholder="Например, Интерстеллар" aria-describedby="favorite-movie-hint favorite-movie-error" />
+                <span class="validation-icon" aria-hidden="true"></span>
+              </div>
+              <span class="field-hint" id="favorite-movie-hint">Необязательное поле, от 2 до 60 символов.</span>
+              <span class="field-error" id="favorite-movie-error" data-error-for="favorite-movie" aria-live="polite"></span>
+            </div>
+
+            <div class="field">
+              <label for="register-password">Пароль <span aria-hidden="true">*</span></label>
+              <div class="field-control-wrap">
+                <input class="form-control" id="register-password" name="password" type="password" autocomplete="new-password" minlength="8" maxlength="24" pattern="(?=.*[A-ZА-ЯЁ])(?=.*[a-zа-яё])(?=.*[0-9]).{8,24}" placeholder="Придумайте пароль" required data-password aria-describedby="register-password-hint register-password-error" />
+                <button class="password-toggle" type="button" data-password-toggle="register-password" aria-label="Показать пароль">Показать</button>
+              </div>
+              <span class="field-hint" id="register-password-hint">8–24 символа: заглавная, строчная буква и цифра.</span>
+              <span class="field-error" id="register-password-error" data-error-for="register-password" aria-live="polite"></span>
+            </div>
+
+            <div class="field">
+              <label for="confirm-password">Повторите пароль <span aria-hidden="true">*</span></label>
+              <div class="field-control-wrap">
+                <input class="form-control" id="confirm-password" name="confirmPassword" type="password" autocomplete="new-password" minlength="8" maxlength="24" placeholder="Повторите пароль" required data-confirm-password aria-describedby="confirm-password-hint confirm-password-error" />
+                <button class="password-toggle" type="button" data-password-toggle="confirm-password" aria-label="Показать пароль">Показать</button>
+              </div>
+              <span class="field-hint" id="confirm-password-hint">Значение должно совпадать с паролем.</span>
+              <span class="field-error" id="confirm-password-error" data-error-for="confirm-password" aria-live="polite"></span>
+            </div>
+
+            <div class="field field--checkbox">
+              <label class="check-field" for="terms">
+                <input id="terms" name="terms" type="checkbox" required aria-describedby="terms-error" />
+                <span>Я принимаю правила учебного сервиса <span aria-hidden="true">*</span></span>
+              </label>
+              <span class="field-error" id="terms-error" data-error-for="terms" aria-live="polite"></span>
+            </div>
+
+            <button class="auth-submit" type="submit">Создать аккаунт</button>
+            <div class="form-success" data-form-success role="status" hidden></div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand brand--small" href="/index.html"><span class="brand__mark">M</span><span>MOVIEHUB</span></a>
+      <p>Формы и клиентская валидация · Лабораторная работа №2</p><a href="#top">Наверх ↑</a>
+    </footer>
+  </body>
+</html>

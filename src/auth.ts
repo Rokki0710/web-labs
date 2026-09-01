@@ -2,6 +2,12 @@ const tabButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[dat
 const tabPanels = Array.from(document.querySelectorAll<HTMLElement>('[data-auth-panel]'))
 const forms = Array.from(document.querySelectorAll<HTMLFormElement>('[data-validate-form]'))
 
+interface AuthResponse {
+  ok: boolean
+  message?: string
+  errors?: Record<string, string>
+}
+
 type TabName = 'login' | 'register'
 
 const showTab = (tabName: TabName, updateHash = true): void => {
@@ -114,6 +120,8 @@ const markAndValidate = (input: HTMLInputElement): boolean => {
 forms.forEach((form) => {
   const fields = Array.from(form.querySelectorAll<HTMLInputElement>('input'))
   const success = form.querySelector<HTMLElement>('[data-form-success]')
+  const serverError = form.querySelector<HTMLElement>('[data-form-server-error]')
+  const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]')
 
   fields.forEach((input) => {
     if (input.matches('[data-phone]')) {
@@ -124,6 +132,7 @@ forms.forEach((form) => {
 
     input.addEventListener('blur', () => markAndValidate(input))
     input.addEventListener('input', () => {
+      serverError?.setAttribute('hidden', '')
       if (input.classList.contains('is-touched') || form.classList.contains('was-submitted')) validateField(input)
 
       if (input.matches('[data-password]')) {
@@ -136,9 +145,10 @@ forms.forEach((form) => {
     })
   })
 
-  form.addEventListener('submit', (event) => {
+  form.addEventListener('submit', async (event) => {
     event.preventDefault()
     success?.setAttribute('hidden', '')
+    serverError?.setAttribute('hidden', '')
     form.classList.add('was-submitted')
 
     const results = fields.map(markAndValidate)
@@ -149,22 +159,71 @@ forms.forEach((form) => {
       return
     }
 
-    if (success) {
-      success.textContent = form.dataset.formKind === 'register'
-        ? 'Регистрация успешно прошла все проверки. Данные никуда не отправлены.'
-        : 'Вход успешно прошёл проверку. Это демонстрационный режим без сервера.'
-      success.removeAttribute('hidden')
+    const formData = new FormData(form)
+    const isRegister = form.dataset.formKind === 'register'
+    const payload = isRegister
+      ? {
+          firstName: formData.get('firstName'),
+          lastName: formData.get('lastName'),
+          email: formData.get('email'),
+          phone: formData.get('phone'),
+          age: Number(formData.get('age')),
+          favoriteMovie: formData.get('favoriteMovie'),
+          password: formData.get('password'),
+          confirmPassword: formData.get('confirmPassword'),
+          terms: formData.has('terms'),
+        }
+      : { email: formData.get('email'), password: formData.get('password'), remember: formData.has('remember') }
+
+    const originalButtonText = submitButton?.textContent ?? ''
+    if (submitButton) {
+      submitButton.disabled = true
+      submitButton.textContent = isRegister ? 'Создаём аккаунт…' : 'Входим…'
     }
 
-    form.reset()
-    form.classList.remove('was-submitted')
-    fields.forEach((input) => {
-      input.classList.remove('is-touched')
-      input.setCustomValidity('')
-      input.removeAttribute('aria-invalid')
-      const error = document.querySelector<HTMLElement>(`[data-error-for="${input.id}"]`)
-      if (error) error.textContent = ''
-    })
+    try {
+      const response = await fetch(`/api/auth/${isRegister ? 'register' : 'login'}`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      })
+      const result = await response.json() as AuthResponse
+
+      if (!response.ok) {
+        Object.entries(result.errors ?? {}).forEach(([name, message]) => {
+          const input = form.elements.namedItem(name)
+          if (!(input instanceof HTMLInputElement)) return
+          input.setCustomValidity(message)
+          input.classList.add('is-touched')
+          input.setAttribute('aria-invalid', 'true')
+          const error = document.querySelector<HTMLElement>(`[data-error-for="${input.id}"]`)
+          if (error) error.textContent = message
+        })
+        if (serverError) {
+          serverError.textContent = result.message ?? 'Не удалось выполнить запрос.'
+          serverError.removeAttribute('hidden')
+        }
+        form.querySelector<HTMLInputElement>(':invalid')?.focus()
+        return
+      }
+
+      if (success) {
+        success.textContent = isRegister ? 'Аккаунт создан. Открываем профиль…' : 'Вход выполнен. Открываем профиль…'
+        success.removeAttribute('hidden')
+      }
+      window.setTimeout(() => location.assign('/profile.html'), 500)
+    } catch {
+      if (serverError) {
+        serverError.textContent = 'Сервер недоступен. Запустите проект командой npm run dev.'
+        serverError.removeAttribute('hidden')
+      }
+    } finally {
+      if (submitButton) {
+        submitButton.disabled = false
+        submitButton.textContent = originalButtonText
+      }
+    }
   })
 })
 

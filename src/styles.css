@@ -550,7 +550,46 @@ main { overflow: hidden; }
 }
 
 .auth-submit:hover { background: var(--accent-dark); transform: translateY(-2px); }
+.auth-submit:disabled, .button:disabled { cursor: wait; opacity: 0.65; transform: none; }
 .form-success { padding: 1rem 1.2rem; border: 1px solid #36c98f; color: #baf4dd; background: rgba(54, 201, 143, 0.09); font-weight: 700; }
+.form-server-error { margin: 0; padding: 1rem 1.2rem; border: 1px solid #ff6365; color: #ffc5c6; background: rgba(255, 77, 79, 0.09); font-weight: 700; }
+
+.profile-page {
+  display: grid;
+  width: min(calc(100% - 2rem), 880px);
+  min-height: calc(100vh - 170px);
+  margin-inline: auto;
+  padding: calc(var(--header-height) + clamp(3rem, 8vw, 7rem)) 0 clamp(5rem, 9vw, 8rem);
+  place-items: start center;
+}
+
+.profile-card {
+  width: 100%;
+  padding: clamp(1.5rem, 6vw, 4.5rem);
+  border: 1px solid var(--line);
+  background: rgba(17, 21, 29, 0.96);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.36);
+}
+
+.profile-card h1 { margin-bottom: 1rem; font-size: clamp(3rem, 8vw, 6rem); }
+.profile-lead { max-width: 650px; color: var(--text-muted); font-size: 1.05rem; }
+.profile-loading { color: var(--text-muted); font-size: 1.1rem; }
+
+.profile-details {
+  display: grid;
+  margin: 2.5rem 0;
+  border-top: 1px solid var(--line);
+  grid-template-columns: 1fr 1fr;
+}
+
+.profile-details div { padding: 1.2rem 0; border-bottom: 1px solid var(--line); }
+.profile-details div:nth-child(odd) { padding-right: 1.5rem; }
+.profile-details div:nth-child(even) { padding-left: 1.5rem; border-left: 1px solid var(--line); }
+.profile-details dt { margin-bottom: 0.25rem; color: var(--text-muted); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
+.profile-details dd { margin: 0; overflow-wrap: anywhere; font-weight: 750; }
+.profile-actions { display: flex; flex-wrap: wrap; gap: 0.8rem; }
+.button--secondary { color: var(--text); background: transparent; cursor: pointer; }
+.button--secondary:hover { border-color: var(--text); }
 
 @media (max-width: 960px) {
   .auth-page { grid-template-columns: 1fr; }
@@ -564,4 +603,6 @@ main { overflow: hidden; }
   .auth-panel { padding: 1.25rem; }
   .auth-tab { padding-inline: 0.5rem; font-size: 0.84rem; }
   .form-row { grid-template-columns: 1fr; }
+  .profile-details { grid-template-columns: 1fr; }
+  .profile-details div:nth-child(odd), .profile-details div:nth-child(even) { padding: 1rem 0; border-left: 0; }
 }

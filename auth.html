@@ -26,7 +26,7 @@
         <li><a href="/index.html">Главная</a></li>
         <li><a href="/movies.html">Фильмы</a></li>
         <li><a href="/about.html">О проекте</a></li>
-        <li><a href="/auth.html" aria-current="page">Войти</a></li>
+        <li><a href="/auth.html" aria-current="page" data-auth-link>Войти</a></li>
       </ul>
       <p class="side-menu__note">Сохраняй идеи.<br />Возвращайся к кино.</p>
     </nav>
@@ -41,7 +41,7 @@
           <li><span>02</span> Собирай любимые жанры</li>
           <li><span>03</span> Возвращайся к подборкам</li>
         </ul>
-        <p class="auth-demo-note"><strong>Учебный режим:</strong> данные проверяются только в браузере и никуда не отправляются.</p>
+        <p class="auth-demo-note"><strong>Полноценный режим:</strong> аккаунт сохраняется в локальной базе, а пароль защищён хешированием.</p>
       </section>
 
       <section class="auth-card" aria-label="Авторизация и регистрация">
@@ -83,6 +83,7 @@
             </label>
 
             <button class="auth-submit" type="submit">Войти</button>
+            <div class="form-server-error" data-form-server-error role="alert" hidden></div>
             <div class="form-success" data-form-success role="status" hidden></div>
           </form>
         </div>
@@ -185,6 +186,7 @@
             </div>
 
             <button class="auth-submit" type="submit">Создать аккаунт</button>
+            <div class="form-server-error" data-form-server-error role="alert" hidden></div>
             <div class="form-success" data-form-success role="status" hidden></div>
           </form>
         </div>
@@ -193,7 +195,7 @@
 
     <footer class="site-footer">
       <a class="brand brand--small" href="/index.html"><span class="brand__mark">M</span><span>MOVIEHUB</span></a>
-      <p>Формы и клиентская валидация · Лабораторная работа №2</p><a href="#top">Наверх ↑</a>
+      <p>Авторизация, формы и валидация · Лабораторная работа №2</p><a href="#top">Наверх ↑</a>
     </footer>
   </body>
 </html>

@@ -25,6 +25,25 @@ document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape' && menu?.classList.contains('is-open')) setMenuOpen(false)
 })
 
+const updateAuthLinks = async (): Promise<void> => {
+  const authLinks = document.querySelectorAll<HTMLAnchorElement>('[data-auth-link]')
+  if (!authLinks.length) return
+
+  try {
+    const response = await fetch('/api/auth/me', { credentials: 'same-origin' })
+    if (!response.ok) return
+    authLinks.forEach((link) => {
+      link.href = '/profile.html'
+      link.textContent = 'Профиль'
+      if (location.pathname.endsWith('/auth.html')) link.removeAttribute('aria-current')
+    })
+  } catch {
+    // Сайт остаётся доступным без API, а ссылка продолжает вести на страницу входа.
+  }
+}
+
+void updateAuthLinks()
+
 const slider = document.querySelector<HTMLElement>('[data-slider]')
 
 if (slider) {

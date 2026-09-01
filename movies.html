@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Каталог MovieHub: фантастика, детективы и драмы." />
+    <title>MovieHub — фильмы</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <!-- Второй способ CSS: стили внутри head. -->
+    <style>
+      .catalog-intro { border-left: 4px solid var(--accent); background: rgba(255, 77, 79, 0.08); padding: 1rem 1.25rem; }
+    </style>
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/index.html"><span class="brand__mark">M</span><span>MOVIEHUB</span></a>
+      <button class="menu-button" type="button" data-menu-toggle aria-controls="side-menu" aria-expanded="false"><span class="menu-button__icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Меню</span></button>
+    </header>
+    <div class="menu-overlay" data-menu-overlay></div>
+    <nav class="side-menu" id="side-menu" data-menu aria-hidden="true" aria-label="Главное меню">
+      <div class="side-menu__top"><strong>Навигация</strong><button class="menu-close" type="button" data-menu-close aria-label="Закрыть меню">×</button></div>
+      <ul class="side-menu__links"><li><a href="/index.html">Главная</a></li><li><a href="/movies.html" aria-current="page">Фильмы</a></li><li><a href="/about.html">О проекте</a></li></ul>
+      <p class="side-menu__note">Выбери жанр.<br />Найди свою историю.</p>
+    </nav>
+
+    <main>
+      <section class="page-hero" id="top">
+        <span class="eyebrow">Каталог / 2026</span><h1>Выбери настроение</h1>
+        <p class="catalog-intro">Три жанра и шесть фильмов — компактный каталог для быстрого выбора.</p>
+      </section>
+      <nav class="page-nav" aria-label="Жанры каталога"><span>Перейти к жанру:</span><a href="#science-fiction">Фантастика</a><a href="#detective">Детектив</a><a href="#drama">Драма</a></nav>
+
+      <section class="section genre-section" id="science-fiction">
+        <div class="section-heading"><div><span class="eyebrow">01 / за пределами</span><h2>Фантастика</h2></div><p>Миры, в которых привычные правила больше не действуют.</p></div>
+        <div class="movie-grid">
+          <article class="movie-card"><img src="/assets/poster-orbit.svg" alt="Постер фильма Орбита" /><div class="movie-card__body"><span class="movie-meta">2026 · 128 мин</span><h3>Орбита</h3><p>Сигнал из пустоты меняет цель космической экспедиции.</p><span class="accent-copy">Рейтинг 9.2</span></div></article>
+          <article class="movie-card movie-card--text"><span class="movie-meta">2024 · 116 мин</span><h3>Сингулярность</h3><p>Учёная пытается вернуть сообщение из будущего до того, как оно исчезнет.</p><ol><li>Медленный темп</li><li>Научная загадка</li><li>Неожиданный финал</li></ol></article>
+        </div>
+      </section>
+
+      <section class="section genre-section" id="detective">
+        <div class="section-heading"><div><span class="eyebrow">02 / ищи детали</span><h2>Детектив</h2></div><p>Истории, где ответ всё время был перед глазами.</p></div>
+        <div class="movie-grid">
+          <article class="movie-card"><img src="/assets/poster-noir.svg" alt="Постер фильма Последний кадр" /><div class="movie-card__body"><span class="movie-meta">2025 · 114 мин</span><h3>Последний кадр</h3><p>Старая плёнка открывает дело, которое никто не хотел расследовать.</p><span class="accent-copy">Рейтинг 8.7</span></div></article>
+          <article class="movie-card movie-card--text"><span class="movie-meta">2023 · 102 мин</span><h3>Комната №7</h3><p>Семь свидетелей рассказывают семь разных версий одной ночи.</p><ul><li>Камерная история</li><li>Ненадёжные герои</li><li>Чёрно-белая стилистика</li></ul></article>
+        </div>
+      </section>
+
+      <section class="section genre-section" id="drama">
+        <div class="section-heading"><div><span class="eyebrow">03 / честный разговор</span><h2>Драма</h2></div><p>Простые события, после которых человек становится другим.</p></div>
+        <div class="movie-grid">
+          <article class="movie-card"><img src="/assets/poster-summer.svg" alt="Постер фильма До рассвета" /><div class="movie-card__body"><span class="movie-meta">2026 · 102 мин</span><h3>До рассвета</h3><p>Разговор двух незнакомцев продолжается, пока город ещё спит.</p><span class="accent-copy">Рейтинг 8.9</span></div></article>
+          <article class="movie-card movie-card--text"><span class="movie-meta">2025 · 98 мин</span><h3>Тихий берег</h3><p>Возвращение домой заставляет героя вспомнить обещание, данное в детстве.</p><ul><li>Семейная история</li><li>Летняя атмосфера</li><li>Живые диалоги</li></ul></article>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer"><a class="brand brand--small" href="/index.html"><span class="brand__mark">M</span><span>MOVIEHUB</span></a><p>Каталог учебного портала</p><a href="#top">Наверх ↑</a></footer>
+  </body>
+</html>

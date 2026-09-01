@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 900" role="img" aria-labelledby="title desc">
+  <title id="title">До рассвета</title><desc id="desc">Тёплый абстрактный постер с восходящим солнцем</desc>
+  <defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#2c2457"/><stop offset=".55" stop-color="#ef6372"/><stop offset="1" stop-color="#ffc56e"/></linearGradient></defs>
+  <rect width="600" height="900" fill="url(#sky)"/><circle cx="300" cy="440" r="145" fill="#ffe7a7"/><path d="M0 480 95 405l80 68 92-116 105 105 70-85 158 130v393H0z" fill="#171b2e"/>
+  <g stroke="#ffdf9e" opacity=".55"><line x1="45" y1="285" x2="180" y2="285"/><line x1="410" y1="330" x2="555" y2="330"/><line x1="90" y1="230" x2="270" y2="230"/></g>
+  <text x="48" y="760" fill="#fff" font-family="Arial, sans-serif" font-size="78" font-weight="700">ДО</text><text x="48" y="835" fill="#fff" font-family="Arial, sans-serif" font-size="68" font-weight="700">РАССВЕТА</text>
+</svg>

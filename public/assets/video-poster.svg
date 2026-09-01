@@ -1,0 +1,3 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title">
+  <title id="title">MovieHub — видео заставка</title><defs><radialGradient id="g"><stop stop-color="#47202b"/><stop offset="1" stop-color="#080a0f"/></radialGradient></defs><rect width="960" height="540" fill="url(#g)"/><circle cx="480" cy="270" r="110" fill="none" stroke="#ff4d4f" stroke-width="3"/><circle cx="480" cy="270" r="78" fill="#11151d" stroke="#fff" stroke-opacity=".2"/><path d="m460 225 80 45-80 45z" fill="#ff4d4f"/><text x="480" y="440" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="34" font-weight="700" letter-spacing="10">MOVIEHUB</text>
+</svg>

@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="MovieHub — простой портал о кино, подборках и жанрах." />
+    <title>MovieHub — главная</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/src/styles.css" />
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="/index.html" aria-label="MovieHub — на главную">
+        <span class="brand__mark">M</span><span>MOVIEHUB</span>
+      </a>
+      <button class="menu-button" type="button" data-menu-toggle aria-controls="side-menu" aria-expanded="false">
+        <span class="menu-button__icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Меню</span>
+      </button>
+    </header>
+
+    <div class="menu-overlay" data-menu-overlay></div>
+    <nav class="side-menu" id="side-menu" data-menu aria-hidden="true" aria-label="Главное меню">
+      <div class="side-menu__top"><strong>Навигация</strong><button class="menu-close" type="button" data-menu-close aria-label="Закрыть меню">×</button></div>
+      <ul class="side-menu__links">
+        <li><a href="/index.html" aria-current="page">Главная</a></li>
+        <li><a href="/movies.html">Фильмы</a></li>
+        <li><a href="/about.html">О проекте</a></li>
+      </ul>
+      <p class="side-menu__note">Три страницы.<br />Один мир кино.</p>
+    </nav>
+
+    <main>
+      <section class="hero" id="top">
+        <div class="hero__copy">
+          <span class="eyebrow">Твой вечер начинается здесь</span>
+          <h1>Кино, которое<br />стоит увидеть</h1>
+          <p><strong>MovieHub</strong> помогает выбрать фильм без бесконечного поиска. Здесь собраны <em>короткие подборки</em>, жанры и свежие идеи для просмотра.</p>
+          <div class="hero__actions">
+            <a class="button button--primary" href="#premieres">Смотреть подборку</a>
+            <a class="button button--ghost" href="/movies.html">Все фильмы</a>
+          </div>
+        </div>
+        <div class="hero__visual" aria-hidden="true">
+          <div class="reel"><span></span><span></span><span></span><span></span></div>
+          <div class="hero__rating"><span>выбор зрителей</span><strong>9.2</strong></div>
+        </div>
+      </section>
+
+      <nav class="page-nav" aria-label="Разделы главной страницы">
+        <span>На этой странице:</span><a href="#premieres">Премьеры</a><a href="#why-us">Почему мы</a><a href="#video">Видео</a>
+      </nav>
+
+      <section class="section" id="premieres">
+        <div class="section-heading">
+          <div><span class="eyebrow">01 / подборка недели</span><h2>Три истории — три настроения</h2></div>
+          <p>Листай карточки кнопками или стрелками клавиатуры.</p>
+        </div>
+        <div class="slider" data-slider tabindex="0" aria-roledescription="карусель" aria-label="Фильмы недели">
+          <div class="slider__viewport">
+            <article class="slide is-active" data-slide aria-hidden="false">
+              <img src="/assets/poster-orbit.svg" alt="Абстрактный постер фильма Орбита" />
+              <div class="slide__content">
+                <span class="movie-meta">Фантастика · 2026 · 2 ч 08 мин</span><h3>Орбита</h3>
+                <p>Экипаж дальней станции получает сигнал, который невозможно было отправить с Земли.</p>
+                <a href="/movies.html#science-fiction">Подробнее о фантастике →</a>
+              </div>
+            </article>
+            <article class="slide" data-slide aria-hidden="true">
+              <img src="/assets/poster-noir.svg" alt="Абстрактный постер фильма Последний кадр" />
+              <div class="slide__content">
+                <span class="movie-meta">Детектив · 2025 · 1 ч 54 мин</span><h3>Последний кадр</h3>
+                <p>Фотограф замечает на старой плёнке улику из дела, закрытого двадцать лет назад.</p>
+                <a href="/movies.html#detective">Открыть детективы →</a>
+              </div>
+            </article>
+            <article class="slide" data-slide aria-hidden="true">
+              <img src="/assets/poster-summer.svg" alt="Абстрактный постер фильма До рассвета" />
+              <div class="slide__content">
+                <span class="movie-meta">Драма · 2026 · 1 ч 42 мин</span><h3>До рассвета</h3>
+                <p>Одна случайная встреча превращает обычную летнюю ночь в разговор на всю жизнь.</p>
+                <a href="/movies.html#drama">Посмотреть драмы →</a>
+              </div>
+            </article>
+          </div>
+          <div class="slider__controls">
+            <button type="button" data-slide-prev aria-label="Предыдущий фильм">←</button>
+            <div class="slider__status" data-slide-status aria-live="polite">1 / 3</div>
+            <button type="button" data-slide-next aria-label="Следующий фильм">→</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="why-us">
+        <div class="section-heading"><div><span class="eyebrow">02 / только главное</span><h2>Почему MovieHub</h2></div></div>
+        <div class="feature-grid">
+          <article class="feature-card"><span class="feature-card__number">01</span><h4>Короткие подборки</h4><p>Не сотни позиций, а несколько фильмов с понятным настроением.</p></article>
+          <article class="feature-card"><span class="feature-card__number">02</span><h4>Разные жанры</h4><p>От камерной драмы до космической фантастики — всё в одном каталоге.</p></article>
+          <article class="feature-card"><span class="feature-card__number">03</span><h4>Без спойлеров</h4><p>Только завязка, атмосфера и причина добавить фильм в свой список.</p></article>
+        </div>
+      </section>
+
+      <section class="section media-section" id="video">
+        <div class="media-section__copy">
+          <span class="eyebrow">03 / заставка</span><h2>Погружение начинается</h2>
+          <p>Небольшая видео-заставка создана специально для MovieHub и хранится прямо в проекте.</p>
+          <ul class="check-list"><li>Локальный MP4-файл</li><li>Управление воспроизведением</li><li>Постер до запуска</li></ul>
+        </div>
+        <video controls preload="metadata" poster="/assets/video-poster.svg">
+          <source src="/assets/moviehub-intro.mp4" type="video/mp4" />
+          Ваш браузер не поддерживает видео. <a href="/assets/moviehub-intro.mp4">Скачайте файл</a>.
+        </video>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <a class="brand brand--small" href="#top"><span class="brand__mark">M</span><span>MOVIEHUB</span></a>
+      <p>Учебный портал о кино · Лабораторная работа №1</p><a href="#top">Наверх ↑</a>
+    </footer>
+  </body>
+</html>

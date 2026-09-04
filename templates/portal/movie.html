@@ -33,6 +33,27 @@
         </div>
       </article>
       <p class="film-source">Источник: <a href="https://www.omdbapi.com/" target="_blank" rel="noopener noreferrer">OMDb API</a> · <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>. Данные могут быть на английском.</p>
+      <section class="comments-section" data-comments hidden aria-labelledby="comments-title">
+        <span class="eyebrow">Обсуждение фильма / лабораторная №6</span>
+        <h2 id="comments-title">Комментарии</h2>
+        <p class="comments-hint">Обновляются автоматически каждые 3 секунды. Пишите по теме и без спойлеров.</p>
+        <p data-comments-login hidden><a href="/auth.html#login">Войдите в аккаунт</a>, чтобы оставить комментарий. Читать можно без регистрации.</p>
+        <form class="comment-form" data-comment-form method="post" hidden>
+          {% csrf_token %}
+          <label for="comment-text">Ваш комментарий</label>
+          <textarea class="form-control" id="comment-text" name="text" rows="4" required minlength="1" maxlength="2000" placeholder="Что понравилось в фильме?" aria-describedby="comment-hint"></textarea>
+          <span id="comment-hint" class="field-hint">От 1 до 2000 символов. Имя и фамилия из профиля будут видны всем.</span>
+          <button class="button button--primary" type="submit" data-comment-submit>Отправить комментарий</button>
+          <p class="form-server-error" data-comment-error role="alert" hidden></p>
+        </form>
+        <p data-comments-status role="status">Загружаем комментарии…</p>
+        <div data-comments-sync-error hidden>
+          <p class="form-server-error" data-comments-error-text role="alert"></p>
+          <button class="button button--secondary" type="button" data-comments-retry>Повторить загрузку</button>
+        </div>
+        <ol class="comments-list" data-comments-list aria-label="Комментарии к фильму"></ol>
+        <noscript>Для отправки и автоматического обновления комментариев включите JavaScript.</noscript>
+      </section>
     </main>
 {% endblock %}
 {% block footer %}

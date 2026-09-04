@@ -20,11 +20,16 @@ class ApiMiddleware:
                 response = JsonResponse({'ok': False, 'message': 'Слишком большой запрос.'}, status=413)
             scope = 'movies' if request.path.startswith('/api/movies') else 'auth'
             limited = scope == 'movies' or request.path in ('/api/auth/register', '/api/auth/login')
+            is_comments = request.path.startswith('/api/movies/') and request.path.endswith('/comments')
+            if is_comments:
+                scope = 'comments-write' if request.method == 'POST' else 'comments-read'
             if response is None and limited:
                 # Never trust a client-supplied X-Forwarded-For header.
                 ip = request.META.get('REMOTE_ADDR', '')
                 key = scope + ':' + hashlib.sha256(ip.encode()).hexdigest()
                 limit, window = (30, 60) if scope == 'movies' else (20, 900)
+                if is_comments:
+                    limit, window = (10, 60) if request.method == 'POST' else (120, 60)
                 if cache.add(key, 1, window):
                     count = 1
                 else:

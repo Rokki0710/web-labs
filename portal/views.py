@@ -115,12 +115,17 @@ def authenticate(request, action):
     return start_session(request, user, data['remember'])
 
 
+def current_account(request):
+    session = LoginSession.objects.select_related('user').filter(token_hash=token_hash(request), expires_at__gt=int(time.time() * 1000)).first()
+    return session.user if session else None
+
+
 @require_GET
 def me(request):
-    session = LoginSession.objects.select_related('user').filter(token_hash=token_hash(request), expires_at__gt=int(time.time() * 1000)).first()
-    if not session:
+    account = current_account(request)
+    if not account:
         return failure('Требуется вход в аккаунт.', 401)
-    return JsonResponse({'ok': True, 'user': session.user.public_data()})
+    return JsonResponse({'ok': True, 'user': account.public_data()})
 
 
 def logout(request):

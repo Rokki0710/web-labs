@@ -588,6 +588,18 @@ main { overflow: hidden; }
 .form-success { padding: 1rem 1.2rem; border: 1px solid #36c98f; color: #baf4dd; background: rgba(54, 201, 143, 0.09); font-weight: 700; }
 .form-server-error { margin: 0; padding: 1rem 1.2rem; border: 1px solid #ff6365; color: #ffc5c6; background: rgba(255, 77, 79, 0.09); font-weight: 700; }
 
+.comments-section { margin-top: 3rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+.comments-hint, .comment-meta time { color: var(--text-muted); }
+.comment-form { display: grid; gap: 0.8rem; margin: 1.5rem 0; max-width: 760px; }
+.comment-form[hidden] { display: none; }
+.comment-form textarea { width: 100%; min-height: 120px; resize: vertical; font: inherit; }
+.comment-form button { justify-self: start; }
+.comments-list { display: grid; gap: 1rem; padding: 0; list-style: none; }
+.comment-item { padding: 1.2rem; border: 1px solid var(--line); background: rgba(17,21,29,.8); overflow-wrap: anywhere; }
+.comment-meta { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem 1rem; }
+.comment-meta time { font-size: 0.85rem; }
+.comment-item p { margin-bottom: 0; white-space: pre-wrap; }
+
 .profile-page {
   display: grid;
   width: min(calc(100% - 2rem), 880px);

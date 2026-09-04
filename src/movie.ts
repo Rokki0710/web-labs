@@ -1,4 +1,5 @@
 import type { MovieDetails } from './types/movies'
+import './comments'
 
 const params = new URLSearchParams(location.search)
 const status = document.querySelector<HTMLElement>('[data-detail-status]')!

@@ -1,5 +1,6 @@
 from django.urls import path
 from portal import views
+from portal.comments import comments
 
 urlpatterns = [
     path('', views.page, name='home'),
@@ -11,6 +12,7 @@ urlpatterns = [
     path('api/auth/me', views.me),
     path('api/auth/logout', views.logout),
     path('api/movies', views.movies),
+    path('api/movies/<str:imdb_id>/comments', comments),
     path('api/movies/<str:imdb_id>', views.movies),
     path('api/<path:path>', views.api_not_found),
 ]

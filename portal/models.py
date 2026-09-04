@@ -35,3 +35,16 @@ class LoginSession(models.Model):
     # Epoch milliseconds preserve compatibility with existing browser sessions.
     expires_at = models.BigIntegerField(db_index=True)
     created_at = models.DateTimeField(default=timezone.now)
+
+
+class Comment(models.Model):
+    author = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='comments')
+    movie_id = models.CharField(max_length=12)
+    text = models.CharField(max_length=2000)
+    created_at = models.DateTimeField(default=timezone.now)
+    # Retries after lost responses must not duplicate messages.
+    request_id = models.UUIDField()
+
+    class Meta:
+        indexes = [models.Index(fields=['movie_id', 'id'], name='comment_movie_cursor')]
+        constraints = [models.UniqueConstraint(fields=['author', 'request_id'], name='comment_request_unique')]

@@ -14,6 +14,7 @@
       .catalog-intro { border-left: 4px solid var(--accent); background: rgba(255, 77, 79, 0.08); padding: 1rem 1.25rem; }
     </style>
     <script type="module" src="/src/main.ts"></script>
+    <script type="module" src="/src/movies.ts"></script>
   </head>
   <body>
     <header class="site-header">
@@ -28,10 +29,26 @@
     </nav>
 
     <main>
-      <section class="page-hero" id="top">
-        <span class="eyebrow">Каталог / 2026</span><h1>Выбери настроение</h1>
-        <p class="catalog-intro">Три жанра и шесть фильмов — компактный каталог для быстрого выбора.</p>
+      <section class="film-search section" id="top" aria-labelledby="search-title">
+        <span class="eyebrow">MovieHub × OMDb / лабораторная №3</span>
+        <h1 id="search-title">Найди своё кино</h1>
+        <p class="catalog-intro">Реальные фильмы из OMDb. Введи оригинальное название — например, Interstellar или Batman. Описания доступны преимущественно на английском.</p>
+        <form class="film-search__form" data-movie-search>
+          <div class="field"><label for="movie-query">Название фильма</label><input class="form-control" id="movie-query" name="query" type="search" minlength="2" maxlength="100" placeholder="Например, Interstellar" required /></div>
+          <div class="field"><label for="movie-year">Год (необязательно)</label><input class="form-control" id="movie-year" name="year" type="number" min="1800" max="2199" step="1" placeholder="2014" /></div>
+          <button class="auth-submit" type="submit">Найти фильмы</button>
+        </form>
+        <p class="film-search__status" data-search-status role="status" aria-live="polite">Начни с названия фильма. Поиск выполняется по кнопке и не расходует запросы при вводе.</p>
+        <div class="form-server-error" data-search-error role="alert" hidden></div>
+        <div class="film-results" data-search-results aria-label="Результаты поиска" aria-busy="false"></div>
+        <nav class="film-pagination" data-pagination aria-label="Страницы результатов" hidden>
+          <button class="button button--secondary" type="button" data-previous>← Назад</button>
+          <span data-page-label></span>
+          <button class="button button--secondary" type="button" data-next>Далее →</button>
+        </nav>
+        <p class="film-source">Данные: <a href="https://www.omdbapi.com/" target="_blank" rel="noopener noreferrer">OMDb API</a> · <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>. Учебное некоммерческое использование.</p>
       </section>
+      <div class="section"><h2>Учебная подборка</h2><p>Вымышленные фильмы из первой лабораторной — примеры HTML-разметки.</p></div>
       <nav class="page-nav" aria-label="Жанры каталога"><span>Перейти к жанру:</span><a href="#science-fiction">Фантастика</a><a href="#detective">Детектив</a><a href="#drama">Драма</a></nav>
 
       <section class="section genre-section" id="science-fiction">

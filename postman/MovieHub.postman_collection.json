@@ -1,0 +1,255 @@
+{
+  "info": {
+    "name": "MovieHub — Lab 3 — OMDb",
+    "description": "Лабораторная №3: внешний REST API. Основная папка MovieHub не требует ключа в Postman: он хранится только на сервере. Запустите npm run dev. Для необязательной папки OMDb direct заполните omdbApiKey только локально, не экспортируйте ключ.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:3000"
+    },
+    {
+      "key": "movieId",
+      "value": "tt0816692"
+    }
+  ],
+  "item": [
+    {
+      "name": "MovieHub",
+      "item": [
+        {
+          "name": "01 — Сервер доступен",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/health"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"ok = true\", () => pm.expect(pm.response.json().ok).to.eql(true));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02 — Поиск Interstellar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/movies?query=Interstellar&page=1"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "const movieResponse = pm.response.json();",
+                  "pm.test(\"Есть фильмы\", () => pm.expect(movieResponse.movies.length).to.be.above(0));",
+                  "pm.test(\"Есть количество и страницы\", () => { pm.expect(movieResponse.totalResults).to.be.a(\"number\"); pm.expect(movieResponse.totalPages).to.be.above(0); });",
+                  "pm.test(\"Карточка содержит нужные поля\", () => pm.expect(movieResponse.movies[0]).to.have.all.keys(\"id\", \"title\", \"year\", \"poster\"));",
+                  "if (movieResponse.movies && movieResponse.movies.length) pm.collectionVariables.set(\"movieId\", movieResponse.movies[0].id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03 — Фильтр по году",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/movies?query=Interstellar&year=2014"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Год 2014\", () => { const data = pm.response.json(); pm.expect(data.movies.length).to.be.above(0); data.movies.forEach(movie => pm.expect(movie.year).to.eql(\"2014\")); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04 — Подробности фильма",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/movies/{{movieId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Есть сюжет, режиссёр и рейтинг\", () => { const movie = pm.response.json().movie; pm.expect(movie.id).to.eql(pm.collectionVariables.get(\"movieId\")); pm.expect(movie).to.include.all.keys(\"plot\", \"director\", \"actors\", \"rating\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05 — Вторая страница Batman",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/movies?query=Batman&page=2"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Страница 2\", () => pm.expect(pm.response.json().page).to.eql(2));",
+                  "pm.test(\"Есть результаты\", () => pm.expect(pm.response.json().movies.length).to.be.above(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06 — Ничего не найдено",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/movies?query=zzzzmoviehubnoresult999999"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Пустой список — не ошибка сервера\", () => { const data = pm.response.json(); pm.expect(data.ok).to.eql(true); pm.expect(data.movies).to.eql([]); pm.expect(data.totalResults).to.eql(0); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07 — Неверные параметры",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/movies?query=x&page=0"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"Понятное сообщение\", () => { pm.expect(pm.response.json().ok).to.eql(false); pm.expect(pm.response.json().message).to.be.a(\"string\"); });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "08 — Неверный IMDb ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/api/movies/wrong-id"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"ok = false\", () => pm.expect(pm.response.json().ok).to.eql(false));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "09 — Несуществующий фильм",
+          "request": {
+            "method": "GET",
+            "header": [],
+              "url": "{{baseUrl}}/api/movies/tt99999999"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"ok = false\", () => pm.expect(pm.response.json().ok).to.eql(false));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "OMDb direct (optional)",
+      "description": "Необязательная демонстрация внешнего API напрямую. Нужна локальная переменная omdbApiKey; не публикуйте её.",
+      "item": [
+        {
+          "name": "Поиск напрямую",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "https://www.omdbapi.com/?apikey={{omdbApiKey}}&s=Interstellar&type=movie&page=1"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"OMDb Response True\", () => pm.expect(pm.response.json().Response).to.eql(\"True\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Подробности напрямую",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "https://www.omdbapi.com/?apikey={{omdbApiKey}}&i=tt0816692&plot=full"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Interstellar\", () => pm.expect(pm.response.json().Title).to.eql(\"Interstellar\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

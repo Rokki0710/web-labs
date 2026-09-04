@@ -12,6 +12,7 @@ export default defineConfig({
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
         movies: resolve(import.meta.dirname, 'movies.html'),
+        movie: resolve(import.meta.dirname, 'movie.html'),
         about: resolve(import.meta.dirname, 'about.html'),
         auth: resolve(import.meta.dirname, 'auth.html'),
         profile: resolve(import.meta.dirname, 'profile.html'),

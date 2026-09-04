@@ -6,10 +6,14 @@ import helmet from 'helmet'
 import { existsSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { loadEnvFile } from 'node:process'
+import { createMovieRouter, createOmdbClient, MovieApiError } from './omdb.js'
 import { createDatabase } from './database.js'
 import { validateLogin, validateRegister } from './validation.js'
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const envPath = resolve(projectRoot, '.env')
+if (existsSync(envPath)) loadEnvFile(envPath)
 const databasePath = process.env.MOVIEHUB_DB_PATH ?? resolve(projectRoot, 'data/moviehub.db')
 const port = Number(process.env.PORT ?? 3000)
 const host = process.env.HOST ?? '127.0.0.1'
@@ -29,7 +33,7 @@ app.use(helmet({
       scriptSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
       fontSrc: ["'self'", 'data:', 'https://fonts.gstatic.com'],
-      imgSrc: ["'self'", 'data:'],
+      imgSrc: ["'self'", 'data:', 'https://m.media-amazon.com', 'https://ia.media-imdb.com'],
       mediaSrc: ["'self'"],
       connectSrc: ["'self'"],
       objectSrc: ["'none'"],
@@ -143,6 +147,14 @@ app.post('/api/auth/logout', (request, response) => {
   response.json({ ok: true })
 })
 
+app.use('/api/movies', rateLimit({
+  windowMs: 60 * 1000,
+  limit: 30,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false,
+  message: { ok: false, message: 'Слишком много запросов. Подождите минуту.' },
+}), createMovieRouter(createOmdbClient({ apiKey: process.env.OMDB_API_KEY })))
+
 app.use('/api', (_request, response) => {
   response.status(404).json({ ok: false, message: 'API-маршрут не найден.' })
 })
@@ -151,6 +163,10 @@ const distPath = resolve(projectRoot, 'dist')
 if (existsSync(distPath)) app.use(express.static(distPath))
 
 app.use((error: unknown, _request: Request, response: Response, _next: NextFunction) => {
+  if (error instanceof MovieApiError) {
+    response.status(error.status).json({ ok: false, message: error.message })
+    return
+  }
   console.error(error instanceof Error ? error.message : 'Unknown server error')
   response.status(500).json({ ok: false, message: 'Внутренняя ошибка сервера.' })
 })

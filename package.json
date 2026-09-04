@@ -4,31 +4,21 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k -n client,server -c cyan,magenta \"npm:dev:client\" \"npm:dev:server\"",
-    "dev:client": "vite",
-    "dev:server": "tsx watch server/index.ts",
+    "setup": "python3 -m venv .venv && node scripts/python.mjs -m pip install -r requirements.txt",
+    "dev": "npm run build && npm run migrate && concurrently -k -n assets,django \"npm:dev:assets\" \"npm:dev:server\"",
+    "dev:assets": "vite build --watch",
+    "dev:server": "node scripts/python.mjs manage.py runserver 127.0.0.1:5173",
     "build": "vite build",
-    "start": "tsx server/index.ts",
+    "migrate": "node scripts/python.mjs manage.py migrate",
+    "start": "node scripts/python.mjs -m gunicorn config.wsgi:application --bind 127.0.0.1:5173 --workers 1 --threads 4",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test tests/*.test.ts",
-    "check": "npm run typecheck && npm test && npm run build"
+    "test": "node scripts/python.mjs manage.py test",
+    "check": "npm run typecheck && npm run build && npm test && node scripts/python.mjs manage.py check && node scripts/python.mjs manage.py makemigrations --check --dry-run"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^9.6.0",
-    "@types/cookie-parser": "^1.4.10",
-    "@types/express": "^5.0.6",
     "@types/node": "^26.4.0",
     "concurrently": "^10.0.5",
-    "tsx": "^4.23.13",
     "typescript": "^7.0.2",
     "vite": "^8.2.2"
-  },
-  "dependencies": {
-    "bcryptjs": "^3.0.3",
-    "better-sqlite3": "^13.0.3",
-    "cookie-parser": "^1.4.7",
-    "express": "^5.2.1",
-    "express-rate-limit": "^8.7.0",
-    "helmet": "^8.3.0"
   }
 }

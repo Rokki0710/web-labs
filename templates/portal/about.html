@@ -1,28 +1,15 @@
-<!doctype html>
-<html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{% extends 'portal/base.html' %}
+{% load vite %}
+{% block head %}
     <meta name="description" content="О проекте MovieHub и принципах его подборок." />
     <title>MovieHub — о проекте</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/src/styles.css" />
-    <script type="module" src="/src/main.ts"></script>
-  </head>
-  <body>
-    <header class="site-header">
-      <a class="brand" href="/index.html"><span class="brand__mark">M</span><span>MOVIEHUB</span></a>
-      <button class="menu-button" type="button" data-menu-toggle aria-controls="side-menu" aria-expanded="false"><span class="menu-button__icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Меню</span></button>
-    </header>
-    <div class="menu-overlay" data-menu-overlay></div>
-    <nav class="side-menu" id="side-menu" data-menu aria-hidden="true" aria-label="Главное меню">
-      <div class="side-menu__top"><strong>Навигация</strong><button class="menu-close" type="button" data-menu-close aria-label="Закрыть меню">×</button></div>
-      <ul class="side-menu__links"><li><a href="/index.html">Главная</a></li><li><a href="/movies.html">Фильмы</a></li><li><a href="/about.html" aria-current="page">О проекте</a></li><li><a href="/auth.html" data-auth-link>Войти</a></li></ul>
-      <p class="side-menu__note">Просто о кино.<br />Честно о выборе.</p>
-    </nav>
 
+{% endblock %}
+{% block scripts %}{% endblock %}
+{% block content %}
     <main>
       <section class="page-hero page-hero--about" id="top">
         <span class="eyebrow">О проекте / лабораторная №1</span><h1>Мы любим выбирать,<br />а не искать</h1>
@@ -54,6 +41,7 @@
         <article class="detail-card detail-card--quiet"><span class="eyebrow">Самый маленький заголовок h6</span><h6>Учебная заметка</h6><p>На трёх страницах намеренно использованы разные уровни заголовков и способы подключения CSS.</p></article>
       </section>
     </main>
+{% endblock %}
+{% block footer %}
     <footer class="site-footer"><a class="brand brand--small" href="/index.html"><span class="brand__mark">M</span><span>MOVIEHUB</span></a><p>Сделано для изучения основ веб-разработки</p><a href="#top">Наверх ↑</a></footer>
-  </body>
-</html>
+{% endblock %}

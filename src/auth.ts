@@ -1,3 +1,5 @@
+import { csrfHeaders } from './csrf'
+
 const tabButtons = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-auth-tab]'))
 const tabPanels = Array.from(document.querySelectorAll<HTMLElement>('[data-auth-panel]'))
 const forms = Array.from(document.querySelectorAll<HTMLFormElement>('[data-validate-form]'))
@@ -118,7 +120,7 @@ const markAndValidate = (input: HTMLInputElement): boolean => {
 }
 
 forms.forEach((form) => {
-  const fields = Array.from(form.querySelectorAll<HTMLInputElement>('input'))
+  const fields = Array.from(form.querySelectorAll<HTMLInputElement>('input:not([type="hidden"])'))
   const success = form.querySelector<HTMLElement>('[data-form-success]')
   const serverError = form.querySelector<HTMLElement>('[data-form-server-error]')
   const submitButton = form.querySelector<HTMLButtonElement>('button[type="submit"]')
@@ -185,7 +187,7 @@ forms.forEach((form) => {
       const response = await fetch(`/api/auth/${isRegister ? 'register' : 'login'}`, {
         method: 'POST',
         credentials: 'same-origin',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await csrfHeaders(),
         body: JSON.stringify(payload),
       })
       const result = await response.json() as AuthResponse

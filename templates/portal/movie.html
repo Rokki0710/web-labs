@@ -1,28 +1,15 @@
-<!doctype html>
-<html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{% extends 'portal/base.html' %}
+{% load vite %}
+{% block head %}
     <meta name="description" content="Информация о фильме из OMDb в MovieHub." />
     <title>MovieHub — фильм</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/src/styles.css" />
-    <script type="module" src="/src/main.ts"></script>
-    <script type="module" src="/src/movie.ts"></script>
-  </head>
-  <body>
-    <header class="site-header">
-      <a class="brand" href="/index.html"><span class="brand__mark">M</span><span>MOVIEHUB</span></a>
-      <button class="menu-button" type="button" data-menu-toggle aria-controls="side-menu" aria-expanded="false"><span class="menu-button__icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Меню</span></button>
-    </header>
-    <div class="menu-overlay" data-menu-overlay></div>
-    <nav class="side-menu" id="side-menu" data-menu aria-hidden="true" aria-label="Главное меню">
-      <div class="side-menu__top"><strong>Навигация</strong><button class="menu-close" type="button" data-menu-close aria-label="Закрыть меню">×</button></div>
-      <ul class="side-menu__links"><li><a href="/index.html">Главная</a></li><li><a href="/movies.html">Фильмы</a></li><li><a href="/about.html">О проекте</a></li><li><a href="/auth.html" data-auth-link>Войти</a></li></ul>
-      <p class="side-menu__note">У каждой истории<br />есть свой зритель.</p>
-    </nav>
+
+{% endblock %}
+{% block scripts %}{% vite_asset 'src/movie.ts' %}{% endblock %}
+{% block content %}
     <main class="film-detail-page section" id="top">
       <a class="button button--ghost" href="/movies.html" data-back>← К результатам поиска</a>
       <p class="film-search__status" data-detail-status role="status">Загружаем фильм…</p>
@@ -47,6 +34,7 @@
       </article>
       <p class="film-source">Источник: <a href="https://www.omdbapi.com/" target="_blank" rel="noopener noreferrer">OMDb API</a> · <a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank" rel="noopener noreferrer">CC BY-NC 4.0</a>. Данные могут быть на английском.</p>
     </main>
+{% endblock %}
+{% block footer %}
     <footer class="site-footer"><a class="brand brand--small" href="/index.html"><span class="brand__mark">M</span><span>MOVIEHUB</span></a><p>Внешнее API · Лабораторная №3</p><a href="#top">Наверх ↑</a></footer>
-  </body>
-</html>
+{% endblock %}

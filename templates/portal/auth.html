@@ -1,36 +1,15 @@
-<!doctype html>
-<html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{% extends 'portal/base.html' %}
+{% load vite %}
+{% block head %}
     <meta name="description" content="Вход и регистрация в учебном портале MovieHub." />
     <title>MovieHub — вход и регистрация</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&amp;display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/src/styles.css" />
-    <script type="module" src="/src/main.ts"></script>
-    <script type="module" src="/src/auth.ts"></script>
-  </head>
-  <body>
-    <header class="site-header">
-      <a class="brand" href="/index.html"><span class="brand__mark">M</span><span>MOVIEHUB</span></a>
-      <button class="menu-button" type="button" data-menu-toggle aria-controls="side-menu" aria-expanded="false">
-        <span class="menu-button__icon" aria-hidden="true"><span></span><span></span><span></span></span><span>Меню</span>
-      </button>
-    </header>
-    <div class="menu-overlay" data-menu-overlay></div>
-    <nav class="side-menu" id="side-menu" data-menu aria-hidden="true" aria-label="Главное меню">
-      <div class="side-menu__top"><strong>Навигация</strong><button class="menu-close" type="button" data-menu-close aria-label="Закрыть меню">×</button></div>
-      <ul class="side-menu__links">
-        <li><a href="/index.html">Главная</a></li>
-        <li><a href="/movies.html">Фильмы</a></li>
-        <li><a href="/about.html">О проекте</a></li>
-        <li><a href="/auth.html" aria-current="page" data-auth-link>Войти</a></li>
-      </ul>
-      <p class="side-menu__note">Сохраняй идеи.<br />Возвращайся к кино.</p>
-    </nav>
 
+{% endblock %}
+{% block scripts %}{% vite_asset 'src/auth.ts' %}{% endblock %}
+{% block content %}
     <main class="auth-page" id="top">
       <section class="auth-intro" aria-labelledby="auth-title">
         <span class="eyebrow">MovieHub ID / лабораторная №2</span>
@@ -56,7 +35,8 @@
             <h2>Войти в MovieHub</h2>
             <p><span class="required-key">Обязательные</span> поля отмечены звёздочкой.</p>
           </div>
-          <form class="auth-form" id="login-form" data-validate-form data-form-kind="login" novalidate>
+          <form class="auth-form" id="login-form" method="post" action="/api/auth/login" data-validate-form data-form-kind="login" novalidate>
+{% csrf_token %}
             <div class="field">
               <label for="login-email">Email <span aria-hidden="true">*</span></label>
               <div class="field-control-wrap">
@@ -94,7 +74,8 @@
             <h2>Создать аккаунт</h2>
             <p>Заполни поля — каждое значение проверяется сразу в браузере.</p>
           </div>
-          <form class="auth-form" id="register-form" data-validate-form data-form-kind="register" novalidate>
+          <form class="auth-form" id="register-form" method="post" action="/api/auth/register" data-validate-form data-form-kind="register" novalidate>
+{% csrf_token %}
             <div class="form-row">
               <div class="field">
                 <label for="first-name">Имя <span aria-hidden="true">*</span></label>
@@ -192,10 +173,10 @@
         </div>
       </section>
     </main>
-
+{% endblock %}
+{% block footer %}
     <footer class="site-footer">
       <a class="brand brand--small" href="/index.html"><span class="brand__mark">M</span><span>MOVIEHUB</span></a>
       <p>Авторизация, формы и валидация · Лабораторная работа №2</p><a href="#top">Наверх ↑</a>
     </footer>
-  </body>
-</html>
+{% endblock %}

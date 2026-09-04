@@ -7,7 +7,7 @@
   "variable": [
     {
       "key": "baseUrl",
-      "value": "http://127.0.0.1:3000"
+      "value": "http://127.0.0.1:5173"
     },
     {
       "key": "movieId",

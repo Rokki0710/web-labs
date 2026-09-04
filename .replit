@@ -1,0 +1,17 @@
+entrypoint = "manage.py"
+modules = ["python-3.11", "nodejs-22"]
+run = "sh scripts/cloud-build.sh && sh scripts/cloud-run.sh"
+
+[env]
+PORT = "3000"
+DJANGO_DEBUG = "false"
+DJANGO_TRUST_PROXY = "true"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
+
+[deployment]
+deploymentTarget = "cloudrun"
+build = ["sh", "scripts/cloud-build.sh"]
+run = ["sh", "scripts/cloud-run.sh"]

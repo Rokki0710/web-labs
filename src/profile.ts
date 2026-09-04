@@ -1,3 +1,5 @@
+import { csrfHeaders } from './csrf'
+
 interface ProfileUser {
   firstName: string
   lastName: string
@@ -56,7 +58,7 @@ logoutButton?.addEventListener('click', async () => {
   logoutButton.disabled = true
   profileError?.setAttribute('hidden', '')
   try {
-    const response = await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' })
+    const response = await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin', headers: await csrfHeaders() })
     if (!response.ok) throw new Error('Logout failed')
     location.replace('/auth.html#login')
   } catch {

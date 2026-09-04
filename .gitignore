@@ -5,3 +5,9 @@ dist/
 .DS_Store
 *.log
 /AGENTS.md
+.venv/
+__pycache__/
+*.py[cod]
+/staticfiles/
+.env.*
+!.env.example

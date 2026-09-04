@@ -1,0 +1,15 @@
+.git
+.github
+.env
+.env.*
+AGENTS.md
+agents.md
+node_modules
+.venv
+data
+dist
+staticfiles
+**/__pycache__
+**/*.pyc
+*.log
+.DS_Store

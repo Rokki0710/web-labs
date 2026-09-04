@@ -278,3 +278,61 @@ web-labs/
     ├── poster-*.svg
     └── moviehub-intro.mp4
 ```
+
+## Лабораторная №7 — микросервисы и Docker
+
+```text
+Браузер → web:8000 (Django, HTML, auth, JSON-комментарии)
+             ├─ volume moviehub-data (SQLite: аккаунты, сессии, комментарии)
+             └─ HTTP/JSON → catalog:8001 → HTTPS → OMDb
+```
+
+Это два независимо запускаемых прикладных сервиса, а не два экземпляра одного сайта. `catalog/` владеет интеграцией OMDb, нормализацией и 10-минутным кэшем; не содержит моделей пользователей и не имеет доступа к БД. `web` сохраняет аккаунты/комментарии и вызывает каталог через `portal/omdb.py`. API для браузера не изменился. При отказе каталога страницы, авторизация и комментарии продолжают работать; поиск показывает безопасную ошибку.
+
+### Локальное развёртывание
+
+Нужны Docker Desktop с запущенным Engine и Docker Compose v2. Из корня проекта:
+
+```bash
+docker compose config --quiet
+docker compose up --build --wait --wait-timeout 180
+docker compose ps
+```
+
+Сайт: [http://localhost:8080](http://localhost:8080). Обычный `npm run dev` остаётся на 5173. Если 8080 занят, задайте `MOVIEHUB_PORT=8081` в локальном `.env` и повторите запуск.
+
+Compose читает `OMDB_API_KEY` из существующего `.env` и передаёт **только каталогу**, без встраивания в образ или JavaScript. Без ключа сайт и комментарии работают, поиск возвращает 503. Не публикуйте вывод `docker compose config` без `--quiet`: он раскрывает подставленные секреты.
+
+Docker создаёт **отдельную пустую БД** в именованном volume: зарегистрируйтесь заново. Локальные `data/moviehub.db`, аккаунты и `.env` не копируются в образы. Миграции выполняются до запуска web; повторный запуск безопасен. `docker compose down` сохраняет данные. **Не используйте `down -v`: это удалит Docker-базу.**
+
+Compose задаёт отдельные cookie `moviehub_docker_session` и `moviehub_docker_csrf`: версии на 5173 и 8080 не перезаписывают авторизацию друг друга.
+
+```bash
+docker compose logs --tail=50 web catalog
+docker compose restart web
+docker compose down
+```
+
+Оба контейнера работают не от root. Публичный порт только у web и только на loopback; catalog доступен по DNS `catalog` внутри сети Compose. Конфигурация намеренно для локального HTTP (`DJANGO_DEBUG=true`), не для публичного интернета. Для production нужны HTTPS, секрет Django, production settings и общие rate limits/cache при нескольких workers. Сейчас по одному worker с четырьмя потоками. SQLite принадлежит только web; общий доступ к БД между сервисами отсутствует.
+
+### Сборка, проверки и CI
+
+- `Dockerfile`: multi-stage Node/Vite → Python/Gunicorn. Node и node_modules отсутствуют в конечном web image.
+- `catalog/Dockerfile`: отдельный образ и зависимости каталога, без шаблонов и БД.
+- `compose.yaml`: сеть, постоянный volume, healthchecks, ожидание здорового catalog через `service_healthy`, автоматический restart.
+- `.github/workflows/check.yml`: на push/PR выполняет TypeScript, сборку Vite, Django-тесты, проверку миграций, Docker build/start и HTTP smoke. Это CI с проверкой локального развёртывания; автоматическая публикация в облако не настроена.
+- `npm run check` — все unit/integration tests без реального OMDb.
+- `.venv/bin/python scripts/smoke_docker.py` — страницы, регистрация, вход, CSRF, отправка JSON-комментария, независимый читатель, идемпотентность и граница каталога. Создаёт вымышленные аккаунт и комментарий **в Docker-БД**, запускайте для демонстрации осознанно.
+
+Чтобы показать разделение: `docker compose stop catalog`, убедиться, что профиль/комментарии доступны, а поиск сообщает ошибку; затем `docker compose start catalog`. Проверка `/api/health` каталога не обращается к OMDb и не тратит квоту. Для проверки сохранности данных перезапустите web и войдите прежними Docker-реквизитами.
+
+Без Docker остаётся совместимый embedded-режим (`CATALOG_URL` пустой). Для отдельного процесса вручную: запустить `gunicorn catalog.wsgi:application --bind 127.0.0.1:8001` с OMDB_API_KEY в окружении и задать web `CATALOG_URL=http://127.0.0.1:8001`. Это режим разработки; основной микросервисный запуск — Compose.
+
+| Пункт ТЗ №7 | Реализация |
+| --- | --- |
+| Разбить на микросервисы | Web + независимый каталог, связь HTTP/JSON |
+| Docker-контейнеры | Два Dockerfile, разные образы и процессы |
+| Локальное развёртывание | Compose, healthchecks, volume, localhost:8080 |
+| Сборщик и CI/CD из необходимых знаний | Vite, multi-stage Docker, GitHub Actions CI |
+
+Принципы конфигурации: [порядок запуска Compose](https://docs.docker.com/compose/how-tos/startup-order/), [multi-stage build](https://docs.docker.com/build/building/multi-stage/).

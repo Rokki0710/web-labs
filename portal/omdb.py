@@ -1,95 +1,46 @@
-"""OMDb adapter. Never expose upstream errors/URLs containing the API key."""
-import hashlib
-import json
-import math
-import re
-from urllib.parse import urlsplit
-
+"""Web-side catalog client; embedded mode supports existing local development."""
 import requests
 from django.conf import settings
-from django.core.cache import caches
-
-IMDB_ID = re.compile(r'tt[0-9]{7,10}')
+from catalog.omdb import IMDB_ID, MovieApiError
 
 
-class MovieApiError(Exception):
-    def __init__(self, status, message):
-        self.status = status
-        super().__init__(message)
-
-
-def text(value):
-    return value if isinstance(value, str) and value != 'N/A' else 'Нет данных'
-
-
-def summary(value):
-    if not isinstance(value, dict) or not isinstance(value.get('imdbID'), str) or not IMDB_ID.fullmatch(value['imdbID']) or not isinstance(value.get('Title'), str):
-        raise MovieApiError(502, 'OMDb вернул некорректную карточку фильма.')
-    poster = None
+def remote(path, params=None):
     try:
-        url = urlsplit(value.get('Poster', ''))
-        if url.scheme == 'https' and url.hostname in ('m.media-amazon.com', 'ia.media-imdb.com') and not url.username and not url.password:
-            poster = value['Poster']
-    except (ValueError, TypeError, AttributeError):
-        pass
-    return {'id': value['imdbID'], 'title': value['Title'], 'year': text(value.get('Year')), 'poster': poster}
-
-
-def request(params):
-    if not settings.OMDB_API_KEY.strip():
-        raise MovieApiError(503, 'Поиск не настроен: добавьте OMDB_API_KEY и перезапустите сервер.')
-    cache_key = hashlib.sha256(json.dumps(params, sort_keys=True).encode()).hexdigest()
-    cached = caches['omdb'].get(cache_key)
-    if cached is not None:
-        return cached
-    try:
-        response = requests.get('https://www.omdbapi.com/', params={**params, 'apikey': settings.OMDB_API_KEY, 'r': 'json'}, timeout=8, allow_redirects=False)
-        if response.status_code in (401, 403):
-            raise MovieApiError(503, 'Ключ OMDb недействителен или ещё не активирован.')
-        if response.status_code == 429:
-            raise MovieApiError(503, 'Лимит OMDb исчерпан. Повторите запрос позже.')
-        if response.status_code != 200:
-            raise MovieApiError(502, 'OMDb временно недоступен. Попробуйте позже.')
+        response = requests.get(settings.CATALOG_URL.rstrip('/') + path,
+                                params=params, timeout=10, allow_redirects=False)
         data = response.json()
     except requests.Timeout:
-        raise MovieApiError(504, 'OMDb не ответил вовремя. Повторите запрос.') from None
+        raise MovieApiError(504, 'Каталог не ответил вовремя. Повторите запрос.') from None
     except (requests.RequestException, ValueError):
-        raise MovieApiError(502, 'Не удалось связаться с OMDb. Повторите запрос позже.') from None
+        raise MovieApiError(502, 'Каталог временно недоступен. Попробуйте позже.') from None
     if not isinstance(data, dict):
-        raise MovieApiError(502, 'OMDb вернул некорректный ответ.')
-    if data.get('Response') == 'False':
-        message = str(data.get('Error', ''))
-        for pattern, status, safe in [
-            ('not found|incorrect imdb', 404, 'Фильм не найден.'),
-            ('too many results', 400, 'Слишком много результатов. Уточните название или год.'),
-            ('limit', 503, 'Дневной лимит OMDb исчерпан. Попробуйте завтра.'),
-            ('key|activat', 503, 'Ключ OMDb недействителен или ещё не активирован.'),
-        ]:
-            if re.search(pattern, message, re.I):
-                raise MovieApiError(status, safe)
-        raise MovieApiError(502, 'OMDb не смог выполнить запрос.')
-    if data.get('Response') != 'True':
-        raise MovieApiError(502, 'OMDb вернул некорректный ответ.')
-    caches['omdb'].set(cache_key, data, 600)
+        raise MovieApiError(502, 'Каталог вернул некорректный ответ.')
+    if response.status_code != 200:
+        status = response.status_code if response.status_code in (400, 404, 503, 504) else 502
+        messages = {400: 'Уточните параметры поиска.', 404: 'Фильм не найден.',
+                    503: 'Каталог не настроен или лимит OMDb исчерпан.',
+                    504: 'Каталог не ответил вовремя.', 502: 'Каталог временно недоступен.'}
+        raise MovieApiError(status, messages[status])
+    if data.get('ok') is not True:
+        raise MovieApiError(502, 'Каталог вернул некорректный ответ.')
     return data
 
 
 def search(query, year, page):
-    try:
-        data = request({'s': query, 'type': 'movie', 'page': str(page), **({'y': year} if year else {})})
-    except MovieApiError as error:
-        if error.status == 404:
-            return {'movies': [], 'totalResults': 0, 'page': page, 'totalPages': 0}
-        raise
-    if not isinstance(data.get('Search'), list) or not re.fullmatch(r'[0-9]+', str(data.get('totalResults', ''))):
-        raise MovieApiError(502, 'OMDb вернул некорректный список фильмов.')
-    total = int(data['totalResults'])
-    return {'movies': [summary(v) for v in data['Search']], 'totalResults': total, 'page': page, 'totalPages': min(100, math.ceil(total / 10))}
+    if not settings.CATALOG_URL:
+        from catalog.omdb import search as embedded_search
+        return embedded_search(query, year, page)
+    data = remote('/api/movies', {'query': query, 'year': year, 'page': page})
+    if not isinstance(data.get('movies'), list) or any(type(data.get(k)) is not int for k in ('totalResults', 'page', 'totalPages')):
+        raise MovieApiError(502, 'Каталог вернул некорректный список.')
+    return {k: data[k] for k in ('movies', 'totalResults', 'page', 'totalPages')}
 
 
 def details(imdb_id):
-    data = request({'i': imdb_id, 'plot': 'full', 'type': 'movie'})
-    return {**summary(data), **{dest: text(data.get(source)) for dest, source in {
-        'plot': 'Plot', 'genre': 'Genre', 'director': 'Director', 'actors': 'Actors',
-        'runtime': 'Runtime', 'rating': 'imdbRating', 'country': 'Country',
-    }.items()}}
+    if not settings.CATALOG_URL:
+        from catalog.omdb import details as embedded_details
+        return embedded_details(imdb_id)
+    data = remote('/api/movies/' + imdb_id)
+    if not isinstance(data.get('movie'), dict) or data['movie'].get('id') != imdb_id:
+        raise MovieApiError(502, 'Каталог вернул некорректную карточку.')
+    return data['movie']

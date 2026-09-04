@@ -1,0 +1,49 @@
+name: moviehub
+services:
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:${MOVIEHUB_PORT:-8080}:8000"
+    environment:
+      # Local HTTP only, bound to loopback. Not a public production configuration.
+      DJANGO_DEBUG: "true"
+      DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+      CATALOG_URL: http://catalog:8001
+      OMDB_API_KEY: ""
+      MOVIEHUB_DB_PATH: /app/data/moviehub.db
+      MOVIEHUB_SESSION_COOKIE_NAME: moviehub_docker_session
+      MOVIEHUB_CSRF_COOKIE_NAME: moviehub_docker_csrf
+    volumes:
+      - moviehub-data:/app/data
+    depends_on:
+      catalog:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+  catalog:
+    build:
+      context: .
+      dockerfile: catalog/Dockerfile
+    environment:
+      OMDB_API_KEY: ${OMDB_API_KEY:-}
+    # Internal-only HTTP service: no published host port and no database volume.
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/api/health', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop: [ALL]
+volumes:
+  moviehub-data:

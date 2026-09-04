@@ -7,14 +7,14 @@ from portal import omdb
 MOVIE = {'Response': 'True', 'imdbID': 'tt0816692', 'Title': 'Interstellar', 'Year': '2014', 'Poster': 'https://m.media-amazon.com/poster.jpg'}
 
 
-@override_settings(OMDB_API_KEY='fake-test-key')
+@override_settings(OMDB_API_KEY='fake-test-key', CATALOG_URL='')
 class OmdbTests(TestCase):
     def setUp(self):
         caches['default'].clear()
         caches['omdb'].clear()
 
     def upstream(self, data, status=200):
-        return patch('portal.omdb.requests.get', return_value=Mock(status_code=status, json=Mock(return_value=data)))
+        return patch('catalog.omdb.requests.get', return_value=Mock(status_code=status, json=Mock(return_value=data)))
 
     def test_search_and_cache(self):
         with self.upstream({'Response': 'True', 'Search': [MOVIE], 'totalResults': '21'}) as fetch:
@@ -67,7 +67,7 @@ class OmdbTests(TestCase):
 
     def test_network_errors(self):
         for error, status in ((requests.Timeout('secret-url'),504), (requests.ConnectionError('secret-url'),502), (ValueError('secret-url'),502)):
-            with self.subTest(status=status), patch('portal.omdb.requests.get', side_effect=error):
+            with self.subTest(status=status), patch('catalog.omdb.requests.get', side_effect=error):
                 response = self.client.get('/api/movies?query=test')
                 self.assertEqual(response.status_code, status)
                 self.assertNotIn('secret-url', response.content.decode())

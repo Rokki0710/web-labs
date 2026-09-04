@@ -19,7 +19,7 @@ from . import omdb
 from .forms import LoginForm, RegisterForm
 from .models import Account, LoginSession
 
-COOKIE = 'moviehub_session'
+COOKIE = settings.MOVIEHUB_SESSION_COOKIE_NAME
 
 
 def failure(message, status=400, **extra):

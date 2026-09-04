@@ -59,6 +59,9 @@ CACHES = {
     'omdb': {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache', 'LOCATION': 'omdb', 'OPTIONS': {'MAX_ENTRIES': 100}},
 }
 OMDB_API_KEY = os.getenv('OMDB_API_KEY', '')
+CATALOG_URL = os.getenv('CATALOG_URL', '')
+MOVIEHUB_SESSION_COOKIE_NAME = os.getenv('MOVIEHUB_SESSION_COOKIE_NAME', 'moviehub_session')
+CSRF_COOKIE_NAME = os.getenv('MOVIEHUB_CSRF_COOKIE_NAME', 'csrftoken')
 DATA_UPLOAD_MAX_MEMORY_SIZE = 16 * 1024
 CSRF_FAILURE_VIEW = 'portal.views.csrf_failure'
 CSRF_COOKIE_SECURE = not DEBUG

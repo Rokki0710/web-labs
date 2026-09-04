@@ -1,0 +1,1 @@
+"""Independent movie catalog service."""

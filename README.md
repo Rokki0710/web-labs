@@ -154,6 +154,51 @@ JSON-поля и прежние адреса сохранены. Для POST и�
 
 Источники настроек: [Django deployment checklist](https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/), [конфигурация Replit](https://docs.replit.com/features/project-setup/configuration), [хранилище и Secrets при публикации](https://docs.replit.com/build/troubleshooting).
 
+## Лабораторная №5 — база данных
+
+Функциональность уже реализована в №2/№4 и сохранена без дублирования моделей или пустых миграций. В №5 добавлены пять проверок БД в `portal/tests/test_database.py` и выполнена регистрация через браузер на отдельной временной SQLite.
+
+| Пункт ТЗ | Где выполнен / как проверен |
+| --- | --- |
+| Создать и подключить БД | SQLite `data/moviehub.db`, `DATABASES` в `config/settings.py`, Django ORM |
+| Пользователь из формы регистрации | `auth.html` → `src/auth.ts` → `POST /api/auth/register` → `RegisterForm` → `Account`; SQL-проверка всех сохранённых полей и открытие профиля |
+| Защита пароля | `make_password`/`check_password`: PBKDF2-SHA256, отдельная случайная соль; одинаковые пароли дают разные хеши, неверный пароль не проходит |
+| Дополнительные модели | Уже есть `LoginSession` с `ForeignKey(Account)`; хранит SHA-256 токена, срок действия и время создания |
+| Миграции | `0001_initial` создаёт модели/ограничения, `0002_import_legacy` переносит старые данные; обе применены, новых изменений схемы нет |
+| Целостность | Уникальный email без учёта регистра, возраст 14–100, внешняя связь и каскадное удаление сессий через ORM проверены тестами |
+
+Точнее говорить **хеширование**, а не обратимое шифрование пароля. Пароль не расшифровывается: Django проверяет введённое значение через `check_password`. Алгоритм, число итераций, соль и результат хеширования хранятся в `password_hash`. Хеши, пароли и токены не возвращаются в JSON профиля. Старые bcrypt-пароли совместимы и обновляются после входа. См. [официальную документацию Django](https://docs.djangoproject.com/en/5.2/topics/auth/passwords/).
+
+`Account` — собственная ORM-модель текущей системы авторизации, не подмена `AUTH_USER_MODEL` и не `django.contrib.auth.User`. Менять рабочую систему и переносить данные ещё раз для этого ТЗ не требуется. Профильные поля уже входят в Account, отдельная дублирующая модель Profile не нужна.
+
+### Демонстрация преподавателю
+
+1. Выполнить `npm run dev`, открыть `/auth.html#register` и зарегистрировать отдельный учебный аккаунт с вымышленными данными и новым паролем (не личным).
+2. Показать переход в профиль с введёнными полями. Выйти и войти снова с тем же email/паролем — данные читаются из БД.
+3. Показать модели и миграции, затем выполнить проверки:
+
+```bash
+.venv/bin/python manage.py showmigrations portal
+.venv/bin/python manage.py migrate --check
+.venv/bin/python manage.py makemigrations --check --dry-run
+.venv/bin/python manage.py test portal.tests.test_database
+```
+
+4. Для демонстрации SQL без вывода персональных данных и хешей открыть `sqlite3 data/moviehub.db` и выполнить:
+
+```sql
+SELECT COUNT(*) AS accounts FROM portal_account;
+SELECT COUNT(*) AS sessions FROM portal_loginsession;
+SELECT COUNT(*) AS orphan_sessions
+FROM portal_loginsession AS s
+LEFT JOIN portal_account AS a ON a.id = s.user_id
+WHERE a.id IS NULL;
+```
+
+Тесты работают в отдельной тестовой БД и автоматически откатывают свои данные. В браузерной проверке №5 использовался отдельный сервер с временной SQLite; существующие пользовательские аккаунты не изменялись. Общий набор — 23 теста (`npm run check`).
+
+Облачный запуск из №4 остаётся отдельным незавершённым этапом: подключение локальной SQLite не означает, что Replit уже запущен. PostgreSQL через `DATABASE_URL` предусмотрена, но настоящая облачная БД пока не проверена.
+
 ## Структура
 
 ```text
